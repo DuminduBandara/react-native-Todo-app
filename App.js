@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
+  Alert,
   Button,
   FlatList,
   ScrollView,
@@ -9,6 +10,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import Header from "./components/header";
 import TodoItem from "./components/todoItem";
@@ -33,30 +36,42 @@ export default function App() {
   }
 
   const submitHandler = (text) => {
-    setTodos((prevTodos) => {
-      return [
-        {text: text, key: Math.random().toString()},
-        ...prevTodos
-      ]
-    })
+
+    if(text.length > 10){
+      setTodos((prevTodos) => {
+        return [
+          {text: text, key: Math.random().toString()},
+          ...prevTodos
+        ]
+      })
+    }else{
+      Alert.alert('OOPS..!', 'Todos must be over 10 chars long', [
+        {text: 'Got it', onPress: () => console.log('Alert closed')}
+      ]);
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Header/>
-      <View style={styles.content}>
-        <AddTodo submitHandler={submitHandler}/>
-        <View style={styles.list}>
-          <FlatList
-            data={todos}
-            renderItem={({item}) => (
-              <TodoItem item={item} pressHandler={pressHandler}/>
-            )}
-          />
+    <TouchableWithoutFeedback onPress={() => {
+      Keyboard.dismiss();
+      console.log('dismissed keyboard!')
+    }}>
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <Header/>
+        <View style={styles.content}>
+          <AddTodo submitHandler={submitHandler}/>
+          <View style={styles.list}>
+            <FlatList
+              data={todos}
+              renderItem={({item}) => (
+                <TodoItem item={item} pressHandler={pressHandler}/>
+              )}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
